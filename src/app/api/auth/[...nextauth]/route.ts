@@ -32,7 +32,7 @@ const handler = NextAuth({
                 };
             },
             clientId: process.env.TESLA_CLIENT_ID,
-            clientSecret: process.env.TESLA_CLIENT_SECRET,
+
             checks: ["pkce", "state"],          // enables built‑in PKCE + CSRF
         },
     ],
