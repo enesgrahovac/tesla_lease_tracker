@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 
-export default NextAuth({
+const handler = NextAuth({
     debug: true,
     providers: [
         {
@@ -28,7 +28,7 @@ export default NextAuth({
                     id: profile.user_id ?? profile.sub,
                     name: profile.name,
                     email: profile.email,
-                    image: null,   // Tesla’s API doesn’t provide an avatar
+                    image: null,   // Tesla's API doesn't provide an avatar
                 };
             },
             clientId: process.env.TESLA_CLIENT_ID,
@@ -57,3 +57,6 @@ export default NextAuth({
         }
     }
 });
+
+// Expose the handler for the HTTP verbs NextAuth uses
+export { handler as GET, handler as POST }
