@@ -47,7 +47,7 @@ const handler = NextAuth({
             },
 
             clientId: process.env.TESLA_CLIENT_ID,
-            /* DO NOT set clientSecret – public PKCE flow */
+            clientSecret: process.env.TESLA_CLIENT_SECRET,
 
             checks: ["pkce", "state"],   // enables PKCE + CSRF
         },
