@@ -9,9 +9,7 @@ const handler = NextAuth({
             name: "Tesla",
             type: "oauth",
             version: "2.0",
-            client: {
-                token_endpoint_auth_method: "client_secret_post",
-            },
+
 
             // ────────── 1. AUTHORIZE STEP ──────────
             authorization: {
@@ -31,7 +29,7 @@ const handler = NextAuth({
                 params: {
                     // both audience *and* issuer are mandatory
                     audience: "https://fleet-api.prd.na.vn.cloud.tesla.com",
-                    issuer: "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3",
+                    issuer: "https://fleet-auth.tesla.com/oauth2/v3/nts",
                 },
             },
 
@@ -46,7 +44,9 @@ const handler = NextAuth({
                     image: null,
                 };
             },
-
+            client: {
+                token_endpoint_auth_method: "client_secret_post",
+            },
             clientId: process.env.TESLA_CLIENT_ID,
             clientSecret: process.env.TESLA_CLIENT_SECRET,
 
