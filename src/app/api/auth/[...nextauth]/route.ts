@@ -9,6 +9,7 @@ const handler = NextAuth({
             name: "Tesla",
             type: "oauth",
             version: "2.0",
+            issuer: "https://fleet-auth.tesla.com/oauth2/v3/nts",
 
 
             // ────────── 1. AUTHORIZE STEP ──────────
