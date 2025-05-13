@@ -2,61 +2,65 @@ import NextAuth from "next-auth";
 
 const handler = NextAuth({
     debug: true,
+
     providers: [
         {
             id: "tesla",
             name: "Tesla",
             type: "oauth",
             version: "2.0",
+
+            // ────────── 1. AUTHORIZE STEP ──────────
             authorization: {
                 url: "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/authorize",
                 params: {
                     client_id: process.env.TESLA_CLIENT_ID,
                     response_type: "code",
                     scope: "openid offline_access vehicle_device_data",
-                    code_challenge_method: "S256"   // Tesla requires PKCE
+                    code_challenge_method: "S256",  // PKCE
                 },
             },
+
+            // ────────── 2. TOKEN STEP ──────────
             token: {
                 url: "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token",
-                params: { audience: "https://fleet-api.prd.na.vn.cloud.tesla.com" },
+                params: {
+                    // both audience *and* issuer are mandatory
+                    audience: "https://fleet-api.prd.na.vn.cloud.tesla.com",
+                    issuer: "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3",
+                },
             },
+
+            // ────────── 3. USERINFO STEP ──────────
             userinfo: "https://fleet-api.prd.na.vn.cloud.tesla.com/api/1/users/me",
-            // Map Tesla's payload into the shape NextAuth expects
-            profile(profile) {
+
+            profile(raw) {
                 return {
-                    id: profile.user_id ?? profile.sub,
-                    name: profile.name,
-                    email: profile.email,
-                    image: null,   // Tesla's API doesn't provide an avatar
+                    id: raw.user_id ?? raw.sub,
+                    name: raw.name,
+                    email: raw.email,
+                    image: null,
                 };
             },
-            clientId: process.env.TESLA_CLIENT_ID,
 
-            checks: ["pkce", "state"],          // enables built‑in PKCE + CSRF
+            clientId: process.env.TESLA_CLIENT_ID,
+            /* DO NOT set clientSecret – public PKCE flow */
+
+            checks: ["pkce", "state"],   // enables PKCE + CSRF
         },
     ],
+
     callbacks: {
-        async redirect({ url, baseUrl }) {
-            // You can customize redirect logic here
-            return url.startsWith(baseUrl) ? url : baseUrl;
+        async jwt({ token, account }) {
+            if (account?.access_token) token.accessToken = account.access_token;
+            return token;
         },
         async session({ session, token }) {
-            // Add access token to session if needed
-            if (token?.accessToken) {
-                session.accessToken = token.accessToken as string;
-            }
+            if (token?.accessToken) session.accessToken = token.accessToken as string;
             return session;
         },
-        async jwt({ token, account }) {
-            // Persist the access token to the token
-            if (account?.access_token) {
-                token.accessToken = account.access_token;
-            }
-            return token;
-        }
-    }
+    },
 });
 
-// Expose the handler for the HTTP verbs NextAuth uses
-export { handler as GET, handler as POST }
+export const GET = handler;
+export const POST = handler;
