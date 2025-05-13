@@ -9,6 +9,9 @@ const handler = NextAuth({
             name: "Tesla",
             type: "oauth",
             version: "2.0",
+            client: {
+                token_endpoint_auth_method: "client_secret_post",
+            },
 
             // ────────── 1. AUTHORIZE STEP ──────────
             authorization: {
