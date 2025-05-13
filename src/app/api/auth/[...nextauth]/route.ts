@@ -15,6 +15,7 @@ const handler = NextAuth({
                 url: "https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/authorize",
                 params: {
                     client_id: process.env.TESLA_CLIENT_ID,
+                    client_secret: process.env.TESLA_CLIENT_SECRET,
                     response_type: "code",
                     scope: "openid offline_access vehicle_device_data",
                     code_challenge_method: "S256",  // PKCE
