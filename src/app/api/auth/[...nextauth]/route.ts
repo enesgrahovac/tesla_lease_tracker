@@ -59,6 +59,10 @@ const handler = NextAuth({
             if (token?.accessToken) session.accessToken = token.accessToken as string;
             return session;
         },
+        async redirect({ url, baseUrl }) {
+            // Always redirect to /dashboard after sign in
+            return `${baseUrl}/dashboard`;
+        },
     },
 });
 
